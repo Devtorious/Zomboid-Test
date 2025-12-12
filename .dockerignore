@@ -1,0 +1,41 @@
+# Git files
+.git
+.gitignore
+.gitattributes
+
+# Documentation
+README.md
+*.md
+
+# CasaOS app config (not needed in container)
+casa-app.yml
+
+# Environment files
+.env
+.env.*
+
+# Server data (will be mounted as volumes)
+server/
+saves/
+logs/
+config/*.ini
+
+# Existing server files from repository
+Server/
+Saves/
+
+# Build artifacts
+*.log
+*.tmp
+*.cache
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db

@@ -1,0 +1,192 @@
+# Example Project Zomboid Server Configuration
+# This file serves as a template for server.ini
+# The actual server.ini will be created in the Zomboid/Server directory
+# by the entrypoint.sh script based on environment variables
+
+# For a complete example, see the Server/wacky.ini file in this repository
+# Documentation: https://pzwiki.net/wiki/Dedicated_Server
+
+# ===========================
+# SERVER IDENTITY
+# ===========================
+
+# Name of the server displayed in the server browser
+PublicName=My Project Zomboid Server
+
+# Description shown in the server browser (use \n for line breaks)
+PublicDescription=A friendly Project Zomboid server running on ARM64!
+
+# Show server in the in-game browser
+Public=false
+
+# Password required to join (leave empty for no password)
+Password=
+
+# ===========================
+# GAMEPLAY SETTINGS
+# ===========================
+
+# Players can hurt and kill other players
+PVP=true
+
+# Game time stops when there are no players online
+PauseEmpty=true
+
+# Toggles global chat
+GlobalChat=true
+
+# Display usernames above player heads
+DisplayUserName=true
+
+# Display first & last name above player heads
+ShowFirstAndLastName=false
+
+# ===========================
+# NETWORK SETTINGS
+# ===========================
+
+# Default starting port (UDP)
+DefaultPort=16261
+
+# Additional UDP port
+UDPPort=16262
+
+# Maximum number of players (1-100, recommended 16-32 for ARM64)
+MaxPlayers=16
+
+# Ping limit in milliseconds before kick (100 to disable)
+PingLimit=400
+
+# Attempt UPnP port forwarding
+UPnP=true
+
+# ===========================
+# PERFORMANCE SETTINGS
+# ===========================
+
+# Save world every X real-world minutes (0 = only on player area exit)
+SaveWorldEveryMinutes=0
+
+# The number of in-game minutes to read one page
+MinutesPerPage=1.0
+
+# Speed multiplier while players sleep
+FastForwardMultiplier=40.0
+
+# ===========================
+# MODS AND WORKSHOP
+# ===========================
+
+# Mod IDs (semicolon separated)
+Mods=
+
+# Workshop item IDs (semicolon separated)
+WorkshopItems=
+
+# Map to use
+Map=Muldraugh, KY
+
+# Kick clients whose game files don't match
+DoLuaChecksum=true
+
+# ===========================
+# ADMIN SETTINGS
+# ===========================
+
+# RCON port for remote console
+RCONPort=27015
+
+# RCON password (set a strong password if using RCON)
+RCONPassword=
+
+# Disable radio for admin
+DisableRadioAdmin=true
+
+# Disable radio for GM
+DisableRadioGM=true
+
+# ===========================
+# ANTI-CHEAT
+# ===========================
+
+# Kick players that appear to move too fast
+KickFastPlayers=false
+
+# Deny login when server is overloaded
+DenyLoginOnOverloadedServer=true
+
+# Enable Steam VAC
+SteamVAC=true
+
+# ===========================
+# VOICE CHAT
+# ===========================
+
+# VOIP enabled
+VoiceEnable=true
+
+# Min distance for VOIP (tiles)
+VoiceMinDistance=10.0
+
+# Max distance for VOIP (tiles)
+VoiceMaxDistance=100.0
+
+# Directional audio for VOIP
+Voice3D=true
+
+# ===========================
+# LOOT AND WORLD
+# ===========================
+
+# Hours before loot respawns (0 = never)
+HoursForLootRespawn=0
+
+# Max items before container won't respawn loot
+MaxItemsForLootRespawn=4
+
+# Construction prevents loot respawn
+ConstructionPreventsLootRespawn=true
+
+# Days before blood splats removed (0 = never)
+BloodSplatLifespanDays=0
+
+# ===========================
+# SAFEHOUSES
+# ===========================
+
+# Players can claim safehouses
+PlayerSafehouse=false
+
+# Only admins can claim safehouses
+AdminSafehouse=false
+
+# Allow non-members to enter safehouse
+SafehouseAllowTrepass=true
+
+# Allow fire damage to safehouses
+SafehouseAllowFire=true
+
+# Allow non-members to take items
+SafehouseAllowLoot=true
+
+# Days survived before claiming safehouse
+SafehouseDaySurvivedToClaim=0
+
+# Hours before player removed from safehouse if not visited
+SafeHouseRemovalTime=144
+
+# ===========================
+# BACKUPS
+# ===========================
+
+# Number of backups to keep
+BackupsCount=5
+
+# Backup on server start
+BackupsOnStart=true
+
+# Backup on version change
+BackupsOnVersionChange=true
+
+# Backup period in minutes (0 = disabled)
+BackupsPeriod=0

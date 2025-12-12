@@ -1,0 +1,217 @@
+name: Project Zomboid Server
+description: |
+  Project Zomboid Dedicated Server for ARM64 devices using Box64/Box86 emulation.
+  
+  This container runs the Project Zomboid dedicated server on ARM64 architecture
+  (Orange Pi 5 Pro, Raspberry Pi 4/5, etc.) using Box64 and Box86 for x86_64 
+  to ARM64 translation.
+  
+  Features:
+  - Full ARM64 support with x86_64 emulation
+  - Automatic server installation and updates
+  - Persistent world saves and configuration
+  - Workshop mod support
+  - Easy configuration via environment variables
+  
+  Minimum Requirements:
+  - 4GB RAM (6GB recommended)
+  - ARM64 processor
+  - 5GB free storage space
+  
+category: Games
+icon: https://steamcdn-a.akamaihd.net/steam/apps/108600/header.jpg
+tagline: Survive the zombie apocalypse on ARM64
+title: Project Zomboid Server (ARM64)
+author: Community
+thumbnail: https://steamcdn-a.akamaihd.net/steam/apps/108600/capsule_616x353.jpg
+
+# Docker compose configuration
+compose:
+  version: "3.8"
+  
+  services:
+    zomboid-server:
+      image: ghcr.io/devtorious/zomboid-arm64:latest  # Update with your registry
+      container_name: zomboid-server
+      restart: unless-stopped
+      
+      environment:
+        - SERVER_NAME=My Project Zomboid Server
+        - SERVER_PASSWORD=
+        - ADMIN_PASSWORD=changeme
+        - MAX_PLAYERS=16
+        - SERVER_PUBLIC=false
+        - PAUSE_EMPTY=true
+        - AUTO_UPDATE=true
+        - MEMORY=4096m
+        - SERVER_PORT=16261
+      
+      ports:
+        - "16261:16261/udp"
+        - "16262:16262/tcp"
+        - "8766:8766/udp"
+        - "8767:8767/udp"
+      
+      volumes:
+        - type: bind
+          source: /DATA/AppData/zomboid-server/server
+          target: /home/steamcmd/server
+        - type: bind
+          source: /DATA/AppData/zomboid-server/config
+          target: /home/steamcmd/config
+        - type: bind
+          source: /DATA/AppData/zomboid-server/saves
+          target: /home/steamcmd/Zomboid
+        - type: bind
+          source: /DATA/AppData/zomboid-server/logs
+          target: /home/steamcmd/logs
+
+# Port definitions for CasaOS UI
+ports:
+  - port: 16261
+    protocol: udp
+    description: Main Game Port - Players connect here
+    required: true
+  - port: 16262
+    protocol: tcp
+    description: Additional TCP Port
+    required: true
+  - port: 8766
+    protocol: udp
+    description: Steam Query Port
+    required: false
+  - port: 8767
+    protocol: udp
+    description: Steam Port
+    required: false
+
+# Volume definitions for CasaOS UI
+volumes:
+  - path: /home/steamcmd/server
+    description: Server installation files (auto-populated)
+    required: true
+  - path: /home/steamcmd/config
+    description: Server configuration files
+    required: true
+  - path: /home/steamcmd/Zomboid
+    description: World saves and player data (BACKUP THIS!)
+    required: true
+  - path: /home/steamcmd/logs
+    description: Server logs for troubleshooting
+    required: true
+
+# Environment variable definitions for CasaOS UI
+environment:
+  - key: SERVER_NAME
+    label: Server Name
+    description: Name displayed in the server browser
+    default: My Project Zomboid Server
+    required: true
+    
+  - key: ADMIN_PASSWORD
+    label: Admin Password
+    description: Password for admin access (CHANGE THIS!)
+    default: changeme
+    required: true
+    type: password
+    
+  - key: SERVER_PASSWORD
+    label: Server Password
+    description: Password players need to join (leave empty for open server)
+    default: ""
+    required: false
+    type: password
+    
+  - key: MAX_PLAYERS
+    label: Max Players
+    description: Maximum number of players (1-100, recommended 16 for ARM64)
+    default: "16"
+    required: true
+    
+  - key: SERVER_PUBLIC
+    label: Public Server
+    description: Show server in public server list
+    default: "false"
+    required: true
+    
+  - key: PAUSE_EMPTY
+    label: Pause When Empty
+    description: Pause the game when no players are online
+    default: "true"
+    required: true
+    
+  - key: AUTO_UPDATE
+    label: Auto Update
+    description: Automatically update server on container start
+    default: "true"
+    required: true
+    
+  - key: MEMORY
+    label: Memory Allocation
+    description: Memory for the server (e.g., 4096m, 6g)
+    default: 4096m
+    required: true
+    
+  - key: SERVER_PORT
+    label: Server Port
+    description: UDP port for game connections
+    default: "16261"
+    required: true
+
+# Architecture support
+architectures:
+  - arm64
+
+# Installation notes
+notes: |
+  ## First Time Setup
+  
+  1. **IMPORTANT**: Change the ADMIN_PASSWORD from 'changeme' to a strong password
+  2. Configure your server name and other settings via environment variables
+  3. The first start will download the server files (~2-3GB), this can take 10-30 minutes
+  4. Port forward UDP 16261 on your router for internet access
+  5. Find your server in the Project Zomboid multiplayer menu
+  
+  ## Data Backup
+  
+  Your world saves are stored in the `saves` volume. Back this up regularly!
+  
+  ## Performance
+  
+  - Recommended: 4-6GB RAM allocation
+  - 16 players max recommended for ARM64 devices
+  - First startup will be slow as Box64 compiles the code cache
+  
+  ## Logs
+  
+  View container logs in CasaOS or check the `logs` volume for detailed server logs.
+  
+  ## Workshop Mods
+  
+  Add Workshop item IDs to the WORKSHOP_ITEMS environment variable (semicolon separated).
+  
+  ## Documentation
+  
+  For detailed documentation, visit the GitHub repository.
+
+# CasaOS metadata
+x-casaos:
+  architectures:
+    - arm64
+  main: zomboid-server
+  author: Community
+  category: Games
+  description:
+    en_us: Project Zomboid Dedicated Server with ARM64 support via Box64/Box86 emulation
+  tagline:
+    en_us: Survive the zombie apocalypse on your ARM64 device
+  developer: The Indie Stone
+  icon: https://steamcdn-a.akamaihd.net/steam/apps/108600/header.jpg
+  screenshot_link:
+    - https://steamcdn-a.akamaihd.net/steam/apps/108600/ss_a87c0b8dd45c491c6f9211e83e1b8273b2eb5928.1920x1080.jpg
+    - https://steamcdn-a.akamaihd.net/steam/apps/108600/ss_4f97158f5e6e2c1e36f6c871e3a6ef41dd80b87a.1920x1080.jpg
+  thumbnail: https://steamcdn-a.akamaihd.net/steam/apps/108600/capsule_616x353.jpg
+  title:
+    en_us: Project Zomboid Server (ARM64)
+  index: /
+  port_map: "16261"

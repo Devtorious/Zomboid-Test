@@ -1,0 +1,30 @@
+# Environment files
+.env
+
+# Docker volumes and generated data
+server/
+saves/
+logs/
+config/*.ini
+
+# Keep example config files
+!config/*.example
+
+# Build artifacts
+*.log
+*.tmp
+*.cache
+
+# IDE and editor files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+.DS_Store
+Thumbs.db
+
+# Temporary files
+/tmp/
