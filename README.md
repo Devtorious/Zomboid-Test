@@ -1,5 +1,8 @@
 # Project Zomboid Dedicated Server for ARM64 (CasaOS Compatible)
 
+[![Docker Image](https://ghcr-badge.egpl.dev/devtorious/zomboid-test/latest_tag?trim=major&label=latest)](https://github.com/Devtorious/Zomboid-Test/pkgs/container/zomboid-test)
+[![Docker Pulls](https://ghcr-badge.egpl.dev/devtorious/zomboid-test/size?tag=latest&label=image+size)](https://github.com/Devtorious/Zomboid-Test/pkgs/container/zomboid-test)
+
 ![Project Zomboid](https://steamcdn-a.akamaihd.net/steam/apps/108600/header.jpg)
 
 Run a **Project Zomboid dedicated server** on ARM64 devices (Orange Pi 5 Pro, Raspberry Pi 4/5, etc.) using Docker and Box64/Box86 for x86_64 to ARM64 architecture translation.
@@ -13,6 +16,8 @@ Fully compatible with **CasaOS** for easy deployment and management through a we
 - ✅ **Full ARM64 Support** - Runs on Orange Pi, Raspberry Pi, and other ARM64 devices
 - ✅ **Box64/Box86 Emulation** - Transparent x86_64 to ARM64 translation
 - ✅ **CasaOS Integration** - Easy deployment and management
+- ✅ **Pre-built Images** - Available on GitHub Container Registry (ghcr.io)
+- ✅ **Multi-Architecture** - ARM64 and AMD64 support
 - ✅ **Automatic Updates** - Optional auto-update on container restart
 - ✅ **Workshop Mod Support** - Install mods from Steam Workshop
 - ✅ **Persistent Data** - Separate volumes for saves, config, and server files
@@ -35,7 +40,39 @@ Fully compatible with **CasaOS** for easy deployment and management through a we
 
 ## 🚀 Quick Start
 
-### Method 1: Using Docker Compose (Recommended)
+### Method 1: Using Pre-built Image (Fastest)
+
+Get started in minutes with our pre-built images from GitHub Container Registry:
+
+```bash
+# Pull the latest image
+docker pull ghcr.io/devtorious/zomboid-test:latest
+
+# Create necessary directories
+mkdir -p server config saves logs
+
+# Run with Docker Compose
+git clone https://github.com/Devtorious/Zomboid-Test.git
+cd Zomboid-Test
+cp .env.example .env
+nano .env  # Edit configuration (IMPORTANT: Change ADMIN_PASSWORD!)
+
+# Start the server (uses pre-built image by default)
+docker-compose up -d
+
+# Monitor logs
+docker-compose logs -f
+```
+
+**Advantages of pre-built images:**
+- ⚡ No build time (saves 15-40 minutes)
+- ✅ Tested and verified builds
+- 🔄 Automatic updates available
+- 📦 Same image across all deployments
+
+### Method 2: Using Docker Compose with Local Build
+
+If you want to build locally or make custom modifications:
 
 1. **Clone the repository**
    ```bash
@@ -51,24 +88,39 @@ Fully compatible with **CasaOS** for easy deployment and management through a we
    
    **IMPORTANT**: Change `ADMIN_PASSWORD` from `changeme` to a strong password!
 
-3. **Start the server**
+3. **Edit docker-compose.yml to build locally**
    ```bash
-   docker-compose up -d
+   nano docker-compose.yml
+   ```
+   
+   Comment out the `image:` line and uncomment the `build:` section:
+   ```yaml
+   services:
+     zomboid-server:
+       # image: ghcr.io/devtorious/zomboid-test:latest
+       build:
+         context: .
+         dockerfile: Dockerfile
    ```
 
-4. **Monitor the installation**
+4. **Build and start the server**
+   ```bash
+   docker-compose up -d --build
+   ```
+
+5. **Monitor the installation**
    ```bash
    docker-compose logs -f
    ```
    
    First startup downloads ~2-3GB and can take 10-30 minutes depending on your connection.
 
-5. **Connect to your server**
+6. **Connect to your server**
    - Open Project Zomboid
    - Go to "Join" → "Server Browser"
    - Find your server by name or add it manually using your IP and port 16261
 
-### Method 2: Using CasaOS
+### Method 3: Using CasaOS
 
 1. **Import via Docker Compose**
    - In CasaOS, go to the App Store
@@ -84,6 +136,55 @@ Fully compatible with **CasaOS** for easy deployment and management through a we
 
 3. **Monitor in CasaOS**
    - View logs, resource usage, and manage the container from the CasaOS dashboard
+
+## 🐳 Docker Images and Tags
+
+### Available Image Tags
+
+Images are automatically built and published to GitHub Container Registry (ghcr.io):
+
+| Tag | Description | Update Frequency | Use Case |
+|-----|-------------|------------------|----------|
+| `latest` | Latest stable release from main branch | On every push to main | Production use |
+| `v1.0.0` | Specific version release | On version tag | Pinned versions |
+| `v1.0` | Major.minor version | On version tag | Auto-update minor versions |
+| `v1` | Major version only | On version tag | Auto-update within major version |
+| `main` | Latest build from main branch | On every push to main | Testing latest changes |
+| `develop` | Latest build from develop branch | On every push to develop | Development/testing |
+| `main-abc1234` | Specific commit SHA | On commit | Testing specific commits |
+
+### Choosing the Right Tag
+
+**For most users (CasaOS, production):**
+```yaml
+image: ghcr.io/devtorious/zomboid-test:latest
+```
+
+**For version pinning:**
+```yaml
+image: ghcr.io/devtorious/zomboid-test:v1.0.0
+```
+
+**For testing/development:**
+```yaml
+image: ghcr.io/devtorious/zomboid-test:develop
+```
+
+### Updating to Latest Image
+
+```bash
+# Pull latest image
+docker pull ghcr.io/devtorious/zomboid-test:latest
+
+# Update and restart
+docker-compose pull
+docker-compose up -d
+```
+
+### Container Registry Documentation
+
+For detailed information about using the GitHub Container Registry, authentication, and advanced usage, see:
+📚 **[Container Registry Documentation](docs/CONTAINER_REGISTRY.md)**
 
 ## ⚙️ Configuration
 

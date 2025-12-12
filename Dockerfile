@@ -3,6 +3,14 @@
 
 FROM ubuntu:22.04
 
+# Labels for GitHub Container Registry
+LABEL org.opencontainers.image.source="https://github.com/Devtorious/Zomboid-Test"
+LABEL org.opencontainers.image.description="Project Zomboid Dedicated Server for ARM64 (CasaOS Compatible)"
+LABEL org.opencontainers.image.licenses="MIT"
+LABEL org.opencontainers.image.title="Project Zomboid ARM64 Server"
+LABEL org.opencontainers.image.vendor="Devtorious"
+LABEL org.opencontainers.image.documentation="https://github.com/Devtorious/Zomboid-Test/blob/main/README.md"
+
 # Set environment variables
 ENV DEBIAN_FRONTEND=noninteractive \
     BOX64_LOG=0 \

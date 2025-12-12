@@ -2,10 +2,11 @@
 .git
 .gitignore
 .gitattributes
+.github
 
 # Documentation
-README.md
 *.md
+docs/
 
 # CasaOS app config (not needed in container)
 casa-app.yml
@@ -29,6 +30,10 @@ Saves/
 *.tmp
 *.cache
 
+# Docker files
+docker-compose.yml
+.dockerignore
+
 # IDE and editor files
 .vscode/
 .idea/
@@ -39,3 +44,7 @@ Saves/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Keep necessary files
+!scripts/
+!config/*.example
