@@ -473,6 +473,48 @@ cat ./logs/server.log
 - Corrupted save → Restore from backup
 - Incompatible mods → Remove recently added mods
 
+### GitHub Actions Build Failures
+
+If you're building your own images and encounter build failures:
+
+**Error: armhf packages fail to install**
+```
+ERROR: failed to solve: process "/bin/sh -c apt-get update && apt-get install -y ... libc6:armhf ..." 
+did not complete successfully: exit code: 100
+```
+
+**Solution:**
+- This means the dpkg architecture wasn't added first
+- The Dockerfile should have `dpkg --add-architecture armhf` before any armhf package installation
+- Check that the package installation follows the correct order
+
+**Error: wrong architecture**
+```
+ERROR: This Dockerfile is designed for ARM64 only, but got: amd64
+```
+
+**Solution:**
+- Verify the workflow specifies `platforms: linux/arm64`
+- Check QEMU is properly set up in the workflow
+- This Dockerfile is specifically designed for ARM64 only
+
+**Build succeeds but image won't run on ARM64**
+
+**Verify image platform:**
+```bash
+docker image inspect ghcr.io/devtorious/zomboid-test:latest | grep Architecture
+```
+
+Should show: `"Architecture": "arm64"`
+
+**Pull and test:**
+```bash
+# On ARM64 device
+docker pull ghcr.io/devtorious/zomboid-test:latest
+docker run --rm ghcr.io/devtorious/zomboid-test:latest uname -m
+# Should output: aarch64
+```
+
 ## 💾 Backup and Restore
 
 ### Manual Backup

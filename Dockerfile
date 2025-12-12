@@ -3,6 +3,12 @@
 
 FROM ubuntu:22.04
 
+# Build arguments for platform detection
+ARG BUILDPLATFORM
+ARG TARGETPLATFORM
+ARG TARGETOS
+ARG TARGETARCH
+
 # Labels for GitHub Container Registry
 LABEL org.opencontainers.image.source="https://github.com/Devtorious/Zomboid-Test"
 LABEL org.opencontainers.image.description="Project Zomboid Dedicated Server for ARM64 (CasaOS Compatible)"
@@ -23,26 +29,49 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SAVES_DIR=/home/steamcmd/Zomboid \
     LOGS_DIR=/home/steamcmd/logs
 
-# Install dependencies
-RUN apt-get update && apt-get install -y \
+# Show what platform we're building for and verify it's ARM64
+RUN echo "Building for $TARGETPLATFORM on $BUILDPLATFORM" && \
+    echo "Target architecture: $TARGETARCH" && \
+    if [ "$TARGETARCH" != "arm64" ]; then \
+        echo "ERROR: This Dockerfile is designed for ARM64 only, but got: $TARGETARCH"; \
+        exit 1; \
+    fi
+
+# Add armhf architecture support for Box86 (32-bit ARM emulation)
+RUN dpkg --add-architecture armhf && \
+    echo "armhf architecture added successfully"
+
+# Update package lists
+RUN apt-get update
+
+# Install base packages (no architecture-specific ones yet)
+RUN apt-get install -y \
     wget \
     curl \
     git \
     cmake \
     build-essential \
     software-properties-common \
-    lib32gcc-s1 \
-    libc6:armhf \
-    libncurses5:armhf \
-    libstdc++6:armhf \
+    ca-certificates \
+    locales \
+    unzip
+
+# Install ARM64 native packages
+RUN apt-get install -y \
     libc6 \
     libstdc++6 \
     libgcc-s1 \
-    libatomic1 \
-    ca-certificates \
-    locales \
-    unzip \
-    && rm -rf /var/lib/apt/lists/*
+    libatomic1
+
+# Install armhf packages (32-bit ARM) for Box86
+RUN apt-get update && apt-get install -y \
+    libc6:armhf \
+    libncurses5:armhf \
+    libstdc++6:armhf \
+    libgcc-s1:armhf
+
+# Clean up package lists
+RUN rm -rf /var/lib/apt/lists/*
 
 # Set locale
 RUN locale-gen en_US.UTF-8
@@ -60,9 +89,9 @@ RUN git clone https://github.com/ptitSeb/box64 /tmp/box64 && \
     cd / && rm -rf /tmp/box64
 
 # Build and install Box86 (ARM64 -> x86 emulation for 32-bit support)
-RUN dpkg --add-architecture armhf && \
-    apt-get update && \
-    apt-get install -y gcc-arm-linux-gnueabihf libc6:armhf libstdc++6:armhf && \
+# Note: armhf architecture and packages already installed above
+RUN apt-get update && \
+    apt-get install -y gcc-arm-linux-gnueabihf && \
     git clone https://github.com/ptitSeb/box86 /tmp/box86 && \
     cd /tmp/box86 && \
     mkdir build && cd build && \
