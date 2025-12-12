@@ -1,0 +1,51 @@
+[Unit]
+Description=Project Zomboid Dedicated Server (ARM64)
+After=network.target
+
+[Service]
+Type=simple
+User=%i
+Group=%i
+
+# Working directory - adjust if your installation path differs
+WorkingDirectory=/home/%i/pzserver
+
+# Environment variables for Box64 optimization
+Environment="BOX64_LOG=0"
+Environment="BOX64_NOBANNER=1"
+Environment="BOX64_DYNAREC_BIGBLOCK=1"
+Environment="BOX64_DYNAREC_SAFEFLAGS=1"
+Environment="BOX64_DYNAREC_FASTNAN=1"
+Environment="BOX64_DYNAREC_FASTROUND=1"
+Environment="BOX64_DYNAREC_X87DOUBLE=1"
+Environment="STEAM_RUNTIME_PREFER_HOST_LIBRARIES=0"
+Environment="STEAM_RUNTIME=0"
+
+# Server configuration - customize these
+Environment="SERVER_NAME=servertest"
+Environment="ADMIN_PASSWORD=changeme"
+Environment="MEMORY=4096m"
+Environment="PZ_SERVER_DIR=/home/%i/pzserver"
+
+# Start command - adjust path to your installation
+ExecStart=/bin/bash /home/%i/Zomboid-Test/scripts/start-server.sh
+
+# Restart policy
+Restart=on-failure
+RestartSec=10
+
+# Resource limits (adjust for Orange Pi 5 Pro)
+LimitNOFILE=100000
+Nice=-5
+
+# Logging
+StandardOutput=journal
+StandardError=journal
+SyslogIdentifier=zomboid-server
+
+# Security settings
+NoNewPrivileges=true
+PrivateTmp=true
+
+[Install]
+WantedBy=multi-user.target

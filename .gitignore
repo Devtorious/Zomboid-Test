@@ -1,0 +1,48 @@
+# Build artifacts and dependencies
+node_modules/
+build/
+dist/
+*.o
+*.so
+*.a
+*.dylib
+
+# Server files (should be installed separately)
+steamcmd/
+pzserver/
+server-data/
+
+# Temporary files
+*.log
+*.tmp
+*.temp
+/tmp/
+.DS_Store
+
+# Java compiled files
+*.class
+*.jar
+*.war
+
+# IDE files
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS files
+Thumbs.db
+.directory
+
+# Backup files
+*.bak
+*.backup
+*~
+
+# Docker volumes
+docker/server-data/
+
+# Local configuration overrides
+local.env
+.env.local

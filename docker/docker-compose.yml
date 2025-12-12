@@ -1,0 +1,59 @@
+version: '3.8'
+
+services:
+  zomboid-server:
+    build:
+      context: ..
+      dockerfile: docker/Dockerfile
+    image: zomboid-server-arm64:latest
+    container_name: zomboid-server
+    
+    # Network configuration
+    network_mode: host
+    
+    # Environment variables
+    environment:
+      - SERVER_NAME=servertest
+      - ADMIN_PASSWORD=changeme123
+      - MEMORY=4096m
+      - PZ_SERVER_DIR=/home/zomboid/pzserver
+      # Box64 optimization
+      - BOX64_LOG=0
+      - BOX64_NOBANNER=1
+      - BOX64_DYNAREC_BIGBLOCK=1
+      - BOX64_DYNAREC_SAFEFLAGS=1
+      - BOX64_DYNAREC_FASTNAN=1
+      - BOX64_DYNAREC_FASTROUND=1
+      - BOX64_DYNAREC_X87DOUBLE=1
+    
+    # Volumes for persistent data
+    volumes:
+      - ./server-data/Zomboid:/home/zomboid/Zomboid
+      - ./server-data/pzserver:/home/zomboid/pzserver
+      - ./config:/home/zomboid/config:ro
+    
+    # Resource limits (adjust for Orange Pi 5 Pro)
+    deploy:
+      resources:
+        limits:
+          memory: 6G
+        reservations:
+          memory: 2G
+    
+    # Restart policy
+    restart: unless-stopped
+    
+    # Healthcheck
+    healthcheck:
+      test: ["CMD", "pgrep", "-f", "zombie.network.GameServer"]
+      interval: 60s
+      timeout: 10s
+      retries: 3
+      start_period: 120s
+    
+    # Logging
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
