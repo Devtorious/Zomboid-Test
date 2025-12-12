@@ -2,9 +2,14 @@ version: "3.8"
 
 services:
   zomboid-server:
-    build:
-      context: .
-      dockerfile: Dockerfile
+    # Use pre-built image from GitHub Container Registry (recommended)
+    image: ghcr.io/devtorious/zomboid-test:latest
+    
+    # OR build locally (comment out 'image' above and uncomment 'build' below)
+    # build:
+    #   context: .
+    #   dockerfile: Dockerfile
+    
     container_name: zomboid-server
     restart: unless-stopped
     
