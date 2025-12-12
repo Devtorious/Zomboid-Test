@@ -16,26 +16,26 @@ jobs:
     permissions:
       contents: write
       packages: write
-    
+
     steps:
       - name: Checkout repository
         uses: actions/checkout@v4
-      
+
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v3
         with:
           platforms: linux/arm64,linux/amd64
-      
+
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v3
-      
+
       - name: Log in to GitHub Container Registry
         uses: docker/login-action@v3
         with:
           registry: ${{ env.REGISTRY }}
           username: ${{ github.actor }}
           password: ${{ secrets.GITHUB_TOKEN }}
-      
+
       - name: Extract metadata (tags, labels)
         id: meta
         uses: docker/metadata-action@v5
@@ -46,7 +46,7 @@ jobs:
             type=semver,pattern={{major}}.{{minor}}
             type=semver,pattern={{major}}
             type=raw,value=latest
-      
+
       - name: Build and push Docker image
         uses: docker/build-push-action@v5
         with:
@@ -57,45 +57,45 @@ jobs:
           labels: ${{ steps.meta.outputs.labels }}
           cache-from: type=gha
           cache-to: type=gha,mode=max
-      
+
       - name: Generate release notes
         id: release_notes
         run: |
           cat > release_notes.md << 'EOF'
           ## Docker Image
-          
+
           Pull the Docker image for this release:
-          
+
           ```bash
           # Pull specific version
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
-          
+
           # Or use the latest tag
           docker pull ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest
           ```
-          
+
           ### Using with Docker Compose
-          
+
           Update your `docker-compose.yml`:
-          
+
           ```yaml
           services:
             zomboid-server:
               image: ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ github.ref_name }}
               # ... rest of your configuration
           ```
-          
+
           ### Supported Architectures
-          
+
           - `linux/arm64` - ARM64 devices (Orange Pi, Raspberry Pi, etc.)
           - `linux/amd64` - x86_64 devices (for testing/development)
-          
+
           ## What's Changed
-          
+
           See commit history for detailed changes.
           EOF
           echo "notes_file=release_notes.md" >> $GITHUB_OUTPUT
-      
+
       - name: Create GitHub Release
         uses: softprops/action-gh-release@v1
         with:
