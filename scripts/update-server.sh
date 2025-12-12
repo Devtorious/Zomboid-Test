@@ -44,9 +44,10 @@ EOF
 log "Running SteamCMD to update server..."
 log "Using Box64 for x86_64 emulation..."
 
-# Run SteamCMD through Box64
+# Run SteamCMD - steamcmd.sh is a bash script, not a binary
+# Box64 will automatically intercept the actual steamcmd binary via binfmt
 cd "${STEAMCMD_DIR}"
-box64 ./steamcmd.sh +runscript "${UPDATE_SCRIPT}"
+bash ./steamcmd.sh +runscript "${UPDATE_SCRIPT}"
 
 # Check if update was successful
 if [ -f "${SERVER_DIR}/ProjectZomboid64.json" ] || [ -f "${SERVER_DIR}/start-server.sh" ]; then

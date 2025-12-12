@@ -440,10 +440,28 @@ docker-compose logs
 
 ### Box64 Emulation Errors
 
-**Check Box64 logs:**
+**Issue:** "couldn't determine 32/64 bit of java" or "[BOX64] Error: Reading elf header"
+
+**Root cause:**
+- Box64 cannot execute shell scripts (.sh files) directly - they must be run with bash
+- The scripts incorrectly try to run shell scripts through box64
+
+**Solution:**
+This has been fixed in the latest version. If you encounter this:
+1. Update to the latest image: `docker pull ghcr.io/devtorious/zomboid-test:latest`
+2. Rebuild: `docker-compose up -d --build`
+
+**How Box64 works correctly:**
+- Shell scripts are run with `bash script.sh`
+- Bash executes the script, which then launches x86_64 binaries
+- Box64 automatically intercepts x86_64 binaries via binfmt_misc
+- Never manually wrap shell scripts with box64
+
+**Check Box64 installation:**
 ```bash
 docker-compose exec zomboid-server bash
 box64 --version
+java -version  # Should show Java 17
 ```
 
 **If Box64 isn't working:**

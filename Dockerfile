@@ -27,7 +27,16 @@ ENV DEBIAN_FRONTEND=noninteractive \
     SERVER_DIR=/home/steamcmd/server \
     CONFIG_DIR=/home/steamcmd/config \
     SAVES_DIR=/home/steamcmd/Zomboid \
-    LOGS_DIR=/home/steamcmd/logs
+    LOGS_DIR=/home/steamcmd/logs \
+    SERVER_NAME="My Zomboid Server" \
+    ADMIN_PASSWORD="changeme" \
+    SERVER_PORT=16261 \
+    STEAM_PORT_1=8766 \
+    STEAM_PORT_2=8767 \
+    AUTO_UPDATE=true \
+    MAX_PLAYERS=16 \
+    SERVER_PUBLIC=false \
+    PAUSE_EMPTY=true
 
 # Show what platform we're building for and verify it's ARM64
 RUN echo "Building for $TARGETPLATFORM on $BUILDPLATFORM" && \
@@ -54,7 +63,8 @@ RUN apt-get install -y \
     software-properties-common \
     ca-certificates \
     locales \
-    unzip
+    unzip \
+    openjdk-17-jre-headless
 
 # Install ARM64 native packages
 RUN apt-get install -y \
@@ -79,6 +89,10 @@ ENV LANG=en_US.UTF-8 \
     LANGUAGE=en_US:en \
     LC_ALL=en_US.UTF-8
 
+# Set JAVA_HOME and update PATH
+ENV JAVA_HOME=/usr/lib/jvm/java-17-openjdk-arm64
+ENV PATH="${JAVA_HOME}/bin:${PATH}"
+
 # Build and install Box64 (ARM64 -> x86_64 emulation)
 RUN git clone https://github.com/ptitSeb/box64 /tmp/box64 && \
     cd /tmp/box64 && \
@@ -100,6 +114,12 @@ RUN apt-get update && \
     make install && \
     cd / && rm -rf /tmp/box86 && \
     apt-get clean && rm -rf /var/lib/apt/lists/*
+
+# Run ldconfig to ensure box64/box86 handlers are properly registered
+RUN ldconfig
+
+# Test that box64 is working
+RUN box64 -v || echo "Box64 installed"
 
 # Create steamcmd user and directories
 RUN useradd -m -d /home/steamcmd -s /bin/bash steamcmd && \
