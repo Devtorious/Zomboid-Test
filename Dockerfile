@@ -30,6 +30,7 @@ ENV DEBIAN_FRONTEND=noninteractive \
     LOGS_DIR=/home/steamcmd/logs \
     SERVER_NAME="My Zomboid Server" \
     ADMIN_PASSWORD="changeme" \
+    # NOTE: ADMIN_PASSWORD must be changed via docker-compose.yml or .env file \
     SERVER_PORT=16261 \
     STEAM_PORT_1=8766 \
     STEAM_PORT_2=8767 \

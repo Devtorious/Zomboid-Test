@@ -38,8 +38,10 @@ export BOX64_LOG=0
 export BOX64_NOBANNER=1
 export BOX64_DYNAREC_BIGBLOCK=1
 export BOX64_DYNAREC_STRONGMEM=1
-export BOX64_DYNAREC_FASTNAN=0  # Disabled for stability with Project Zomboid
-export BOX64_DYNAREC_FASTROUND=0  # Disabled for stability with Project Zomboid
+# Disable FASTNAN and FASTROUND for stability with Project Zomboid
+# These optimizations can cause floating-point calculation errors in Java applications
+export BOX64_DYNAREC_FASTNAN=0
+export BOX64_DYNAREC_FASTROUND=0
 export BOX64_DYNAREC_SAFEFLAGS=0
 export BOX64_DYNAREC_X87DOUBLE=1
 export BOX86_LOG=0

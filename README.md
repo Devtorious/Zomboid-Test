@@ -364,14 +364,14 @@ Orange Pi 5 Pro recommendations:
 
 The Dockerfile already includes optimized Box64 settings. For custom tuning, add to `.env`:
 ```bash
-BOX64_DYNAREC_BIGBLOCK=1
-BOX64_DYNAREC_STRONGMEM=1
-BOX64_DYNAREC_FASTNAN=0
-BOX64_DYNAREC_FASTROUND=0
-BOX64_DYNAREC_SAFEFLAGS=0
+BOX64_DYNAREC_BIGBLOCK=1       # Enable larger translation blocks for better performance
+BOX64_DYNAREC_STRONGMEM=1      # Enable strong memory model for stability
+BOX64_DYNAREC_FASTNAN=0        # Disable fast NaN handling (stability over speed)
+BOX64_DYNAREC_FASTROUND=0      # Disable fast rounding (prevents FP calculation errors)
+BOX64_DYNAREC_SAFEFLAGS=0      # Disable safe flags for better performance
 ```
 
-**Note**: FASTNAN and FASTROUND are set to 0 (disabled) for stability with Project Zomboid on ARM64.
+**Note**: FASTNAN and FASTROUND are disabled for stability with Project Zomboid's Java runtime, preventing floating-point calculation errors.
 
 ### Player Count Recommendations
 
