@@ -1,0 +1,71 @@
+version: "3.8"
+
+services:
+  zomboid-server:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: zomboid-server
+    restart: unless-stopped
+    
+    # Environment variables for server configuration
+    environment:
+      - SERVER_NAME=${SERVER_NAME:-My Project Zomboid Server}
+      - SERVER_PASSWORD=${SERVER_PASSWORD:-}
+      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
+      - MAX_PLAYERS=${MAX_PLAYERS:-16}
+      - SERVER_PUBLIC=${SERVER_PUBLIC:-false}
+      - PAUSE_EMPTY=${PAUSE_EMPTY:-true}
+      - AUTO_UPDATE=${AUTO_UPDATE:-true}
+      - MEMORY=${MEMORY:-4096m}
+      - SERVER_PORT=${SERVER_PORT:-16261}
+      - MODS=${MODS:-}
+      - WORKSHOP_ITEMS=${WORKSHOP_ITEMS:-}
+    
+    # Port mappings
+    ports:
+      - "${SERVER_PORT:-16261}:16261/udp"  # Main game port
+      - "16262:16262/tcp"                   # Additional TCP port
+      - "8766:8766/udp"                     # Steam query port
+      - "8767:8767/udp"                     # Steam port
+    
+    # Volume mappings for persistent data
+    volumes:
+      - ./server:/home/steamcmd/server
+      - ./config:/home/steamcmd/config
+      - ./saves:/home/steamcmd/Zomboid
+      - ./logs:/home/steamcmd/logs
+    
+    # CasaOS labels for better UI integration
+    labels:
+      # Basic info
+      - "com.docker.compose.project=zomboid-server"
+      - "casaos.name=Project Zomboid Server"
+      - "casaos.description=Project Zomboid Dedicated Server for ARM64 (with Box64/Box86 emulation)"
+      - "casaos.category=Games"
+      - "casaos.icon=https://steamcdn-a.akamaihd.net/steam/apps/108600/header.jpg"
+      
+      # Port labels
+      - "casaos.port.16261.desc=Main Game Port (UDP)"
+      - "casaos.port.16262.desc=Additional TCP Port"
+      - "casaos.port.8766.desc=Steam Query Port (UDP)"
+      - "casaos.port.8767.desc=Steam Port (UDP)"
+      
+      # Volume labels
+      - "casaos.volume.server.desc=Server installation files"
+      - "casaos.volume.config.desc=Server configuration files"
+      - "casaos.volume.saves.desc=World saves and player data"
+      - "casaos.volume.logs.desc=Server logs"
+      
+      # Architecture
+      - "casaos.architecture=arm64"
+      
+    # Resource limits (optional, adjust for your Orange Pi 5 Pro)
+    # deploy:
+    #   resources:
+    #     limits:
+    #       cpus: '4.0'
+    #       memory: 6G
+    #     reservations:
+    #       cpus: '2.0'
+    #       memory: 4G
