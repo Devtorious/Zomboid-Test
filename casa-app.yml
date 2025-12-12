@@ -31,7 +31,11 @@ compose:
   
   services:
     zomboid-server:
-      image: ghcr.io/devtorious/zomboid-arm64:latest  # Update with your registry
+      # Build from local Dockerfile or use your own registry
+      # image: ghcr.io/devtorious/zomboid-arm64:latest
+      build:
+        context: .
+        dockerfile: Dockerfile
       container_name: zomboid-server
       restart: unless-stopped
       
