@@ -29,24 +29,24 @@ log "This may take a while depending on your internet connection."
 # Ensure server directory exists
 mkdir -p "${SERVER_DIR}"
 
-# Create SteamCMD script for installation
-INSTALL_SCRIPT="/tmp/install_zomboid.txt"
-cat > "${INSTALL_SCRIPT}" <<EOF
-@ShutdownOnFailedCommand 1
-@NoPromptForPassword 1
-force_install_dir ${SERVER_DIR}
-login anonymous
-app_update 380870 validate
-quit
-EOF
+# Force SteamCMD to use 64-bit binary (Box64) instead of 32-bit (Box86)
+# The 64-bit version is more stable with Box64 emulation
+export STEAMCMD_USE_X86_64=1
+
+# Also create the linux64 directory if it doesn't exist
+cd "${STEAMCMD_DIR}"
+mkdir -p linux64
 
 log "Running SteamCMD to download Project Zomboid server (App ID: 380870)..."
-log "Using Box64 for x86_64 emulation..."
+log "Using 64-bit SteamCMD with Box64 for x86_64 emulation..."
 
-# Run SteamCMD - steamcmd.sh is a bash script, not a binary
-# Box64 will automatically intercept the actual steamcmd binary via binfmt
-cd "${STEAMCMD_DIR}"
-bash ./steamcmd.sh +runscript "${INSTALL_SCRIPT}"
+# Run SteamCMD with platform forcing parameters
+./steamcmd.sh \
+    +@sSteamCmdForcePlatformType linux \
+    +force_install_dir "${SERVER_DIR}" \
+    +login anonymous \
+    +app_update 380870 validate \
+    +quit
 
 # Check if installation was successful
 if [ -f "${SERVER_DIR}/ProjectZomboid64.json" ] || [ -f "${SERVER_DIR}/start-server.sh" ]; then

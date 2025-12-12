@@ -44,8 +44,12 @@ export BOX64_DYNAREC_FASTNAN=0
 export BOX64_DYNAREC_FASTROUND=0
 export BOX64_DYNAREC_SAFEFLAGS=0
 export BOX64_DYNAREC_X87DOUBLE=1
+export BOX64_SHOWSEGV=1
 export BOX86_LOG=0
 export BOX86_NOBANNER=1
+
+# Force SteamCMD to use 64-bit binary
+export STEAMCMD_USE_X86_64=1
 
 # Paths
 STEAMCMD_DIR="/home/steamcmd/steamcmd"
@@ -57,6 +61,21 @@ LOGS_DIR="/home/steamcmd/logs"
 log "Starting Project Zomboid Dedicated Server for ARM64"
 log "Using Box64 for x86_64 emulation"
 
+# Verify Box64 is installed
+if ! command -v box64 &> /dev/null; then
+    log_error "Box64 not found!"
+    exit 1
+fi
+
+log "Box64 version: $(box64 -v 2>&1 | head -n 1 || echo 'installed')"
+
+# Verify Box86 is installed (optional, for 32-bit support)
+if ! command -v box86 &> /dev/null; then
+    log_warn "Box86 not found (32-bit emulation unavailable)"
+else
+    log "Box86 version: $(box86 -v 2>&1 | head -n 1 || echo 'installed')"
+fi
+
 # Verify Java installation
 if ! command -v java &> /dev/null; then
     log_error "Java not found!"
@@ -64,6 +83,16 @@ if ! command -v java &> /dev/null; then
 fi
 
 log "Java version: $(java -version 2>&1 | head -n 1)"
+
+# Check SteamCMD directory
+if [ ! -d "${STEAMCMD_DIR}" ]; then
+    log_error "SteamCMD directory not found!"
+    exit 1
+fi
+
+# List what we have in SteamCMD directory for debugging
+log "SteamCMD directory contents:"
+ls -la "${STEAMCMD_DIR}" || true
 
 # Check if server is installed
 if [ ! -f "${SERVER_DIR}/ProjectZomboid64.json" ] && [ ! -f "${SERVER_DIR}/start-server.sh" ]; then

@@ -30,24 +30,21 @@ if [ ! -d "${SERVER_DIR}" ]; then
     exit 1
 fi
 
-# Create SteamCMD script for update
-UPDATE_SCRIPT="/tmp/update_zomboid.txt"
-cat > "${UPDATE_SCRIPT}" <<EOF
-@ShutdownOnFailedCommand 1
-@NoPromptForPassword 1
-force_install_dir ${SERVER_DIR}
-login anonymous
-app_update 380870 validate
-quit
-EOF
+# Force SteamCMD to use 64-bit binary (Box64) instead of 32-bit (Box86)
+export STEAMCMD_USE_X86_64=1
+
+cd "${STEAMCMD_DIR}"
 
 log "Running SteamCMD to update server..."
-log "Using Box64 for x86_64 emulation..."
+log "Using 64-bit SteamCMD with Box64 for x86_64 emulation..."
 
-# Run SteamCMD - steamcmd.sh is a bash script, not a binary
-# Box64 will automatically intercept the actual steamcmd binary via binfmt
-cd "${STEAMCMD_DIR}"
-bash ./steamcmd.sh +runscript "${UPDATE_SCRIPT}"
+# Run SteamCMD with platform forcing parameters
+./steamcmd.sh \
+    +@sSteamCmdForcePlatformType linux \
+    +force_install_dir "${SERVER_DIR}" \
+    +login anonymous \
+    +app_update 380870 validate \
+    +quit
 
 # Check if update was successful
 if [ -f "${SERVER_DIR}/ProjectZomboid64.json" ] || [ -f "${SERVER_DIR}/start-server.sh" ]; then
