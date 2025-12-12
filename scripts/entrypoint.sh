@@ -38,8 +38,8 @@ export BOX64_LOG=0
 export BOX64_NOBANNER=1
 export BOX64_DYNAREC_BIGBLOCK=1
 export BOX64_DYNAREC_STRONGMEM=1
-export BOX64_DYNAREC_FASTNAN=0
-export BOX64_DYNAREC_FASTROUND=0
+export BOX64_DYNAREC_FASTNAN=0  # Disabled for stability with Project Zomboid
+export BOX64_DYNAREC_FASTROUND=0  # Disabled for stability with Project Zomboid
 export BOX64_DYNAREC_SAFEFLAGS=0
 export BOX64_DYNAREC_X87DOUBLE=1
 export BOX86_LOG=0
@@ -254,12 +254,13 @@ if [ -f "${SERVER_DIR}/start-server.sh" ]; then
     # Project Zomboid's start-server.sh is a bash script
     # Box64 will automatically intercept any x86_64 binaries via binfmt
     # Use exec to replace the shell process for proper signal handling
+    # Redirect output to both log file and stdout
     exec bash "${SERVER_DIR}/start-server.sh" \
         -servername "${SERVER_NAME}" \
         -cachedir=/home/steamcmd/Zomboid \
         -adminusername admin \
         -adminpassword "${ADMIN_PASSWORD}" \
-        -Xmx${MEMORY} -Xms${MEMORY} 2>&1 | tee -a "${LOG_FILE}"
+        -Xmx${MEMORY} -Xms${MEMORY} >> "${LOG_FILE}" 2>&1
 else
     log_error "start-server.sh not found in ${SERVER_DIR}"
     log_error "Server installation may be incomplete."

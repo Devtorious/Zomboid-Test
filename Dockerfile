@@ -118,8 +118,8 @@ RUN apt-get update && \
 # Run ldconfig to ensure box64/box86 handlers are properly registered
 RUN ldconfig
 
-# Test that box64 is working
-RUN box64 -v || echo "Box64 installed"
+# Verify that box64 is installed and working
+RUN box64 -v
 
 # Create steamcmd user and directories
 RUN useradd -m -d /home/steamcmd -s /bin/bash steamcmd && \
