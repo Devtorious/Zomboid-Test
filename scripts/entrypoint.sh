@@ -67,13 +67,13 @@ if ! command -v box64 &> /dev/null; then
     exit 1
 fi
 
-log "Box64 version: $(box64 -v 2>&1 | head -n 1 || echo 'installed')"
+log "Box64 version: $(box64 -v 2>&1 | head -n 1 || echo 'version unknown')"
 
 # Check for Box86 (informational only - not required since we use 64-bit mode)
 if ! command -v box86 &> /dev/null; then
     log "Box86 not installed (32-bit x86 support unavailable - not needed for 64-bit mode)"
 else
-    log "Box86 version: $(box86 -v 2>&1 | head -n 1 || echo 'installed')"
+    log "Box86 version: $(box86 -v 2>&1 | head -n 1 || echo 'version unknown')"
 fi
 
 # Verify Java installation
