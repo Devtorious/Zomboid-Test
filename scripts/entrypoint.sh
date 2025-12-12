@@ -230,19 +230,6 @@ log "Memory: ${MEMORY}"
 # Change to server directory
 cd "${SERVER_DIR}"
 
-# Graceful shutdown handler
-shutdown() {
-    log "Shutting down server gracefully..."
-    if [ -n "$SERVER_PID" ]; then
-        kill -SIGTERM "$SERVER_PID" 2>/dev/null || true
-        wait "$SERVER_PID" 2>/dev/null || true
-    fi
-    log "Server stopped."
-    exit 0
-}
-
-trap shutdown SIGTERM SIGINT
-
 # Start the server using Box64
 # The server uses start-server.sh which internally calls the Java server
 if [ -f "${SERVER_DIR}/start-server.sh" ]; then
@@ -253,14 +240,15 @@ if [ -f "${SERVER_DIR}/start-server.sh" ]; then
     
     # Project Zomboid's start-server.sh is a bash script
     # Box64 will automatically intercept any x86_64 binaries via binfmt
-    # Use exec to replace the shell process for proper signal handling
-    # Redirect output to both log file and stdout
+    # Use exec to replace the shell process - this ensures proper signal handling
+    # The start-server.sh script will handle SIGTERM/SIGINT directly
+    # Output goes to both stdout (Docker logs) and log file
     exec bash "${SERVER_DIR}/start-server.sh" \
         -servername "${SERVER_NAME}" \
         -cachedir=/home/steamcmd/Zomboid \
         -adminusername admin \
         -adminpassword "${ADMIN_PASSWORD}" \
-        -Xmx${MEMORY} -Xms${MEMORY} >> "${LOG_FILE}" 2>&1
+        -Xmx${MEMORY} -Xms${MEMORY}
 else
     log_error "start-server.sh not found in ${SERVER_DIR}"
     log_error "Server installation may be incomplete."
