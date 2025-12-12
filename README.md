@@ -364,11 +364,14 @@ Orange Pi 5 Pro recommendations:
 
 The Dockerfile already includes optimized Box64 settings. For custom tuning, add to `.env`:
 ```bash
-BOX64_DYNAREC_STRONGMEM=1
-BOX64_DYNAREC_BIGBLOCK=1
-BOX64_DYNAREC_SAFEFLAGS=0
-BOX64_DYNAREC_FASTNAN=1
+BOX64_DYNAREC_BIGBLOCK=1       # Enable larger translation blocks for better performance
+BOX64_DYNAREC_STRONGMEM=1      # Enable strong memory model for stability
+BOX64_DYNAREC_FASTNAN=0        # Disable fast NaN handling (stability over speed)
+BOX64_DYNAREC_FASTROUND=0      # Disable fast rounding (prevents FP calculation errors)
+BOX64_DYNAREC_SAFEFLAGS=0      # Disable safe flags for better performance
 ```
+
+**Note**: FASTNAN and FASTROUND are disabled for stability with Project Zomboid's Java runtime, preventing floating-point calculation errors.
 
 ### Player Count Recommendations
 
@@ -440,10 +443,28 @@ docker-compose logs
 
 ### Box64 Emulation Errors
 
-**Check Box64 logs:**
+**Issue:** "couldn't determine 32/64 bit of java" or "[BOX64] Error: Reading elf header"
+
+**Root cause:**
+- Box64 cannot execute shell scripts (.sh files) directly - they must be run with bash
+- The scripts incorrectly try to run shell scripts through box64
+
+**Solution:**
+This has been fixed in the latest version. If you encounter this:
+1. Update to the latest image: `docker pull ghcr.io/devtorious/zomboid-test:latest`
+2. Rebuild: `docker-compose up -d --build`
+
+**How Box64 works correctly:**
+- Shell scripts are run with `bash script.sh`
+- Bash executes the script, which then launches x86_64 binaries
+- Box64 automatically intercepts x86_64 binaries via binfmt_misc
+- Never manually wrap shell scripts with box64
+
+**Check Box64 installation:**
 ```bash
 docker-compose exec zomboid-server bash
 box64 --version
+java -version  # Should show Java 17
 ```
 
 **If Box64 isn't working:**

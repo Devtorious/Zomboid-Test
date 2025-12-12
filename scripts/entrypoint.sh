@@ -36,10 +36,13 @@ export SERVER_PORT="${SERVER_PORT:-16261}"
 # Box64 environment variables for optimal performance on ARM64
 export BOX64_LOG=0
 export BOX64_NOBANNER=1
-export BOX64_DYNAREC_STRONGMEM=1
 export BOX64_DYNAREC_BIGBLOCK=1
+export BOX64_DYNAREC_STRONGMEM=1
+# Disable FASTNAN and FASTROUND for stability with Project Zomboid
+# These optimizations can cause floating-point calculation errors in Java applications
+export BOX64_DYNAREC_FASTNAN=0
+export BOX64_DYNAREC_FASTROUND=0
 export BOX64_DYNAREC_SAFEFLAGS=0
-export BOX64_DYNAREC_FASTNAN=1
 export BOX64_DYNAREC_X87DOUBLE=1
 export BOX86_LOG=0
 export BOX86_NOBANNER=1
@@ -53,6 +56,14 @@ LOGS_DIR="/home/steamcmd/logs"
 
 log "Starting Project Zomboid Dedicated Server for ARM64"
 log "Using Box64 for x86_64 emulation"
+
+# Verify Java installation
+if ! command -v java &> /dev/null; then
+    log_error "Java not found!"
+    exit 1
+fi
+
+log "Java version: $(java -version 2>&1 | head -n 1)"
 
 # Check if server is installed
 if [ ! -f "${SERVER_DIR}/ProjectZomboid64.json" ] && [ ! -f "${SERVER_DIR}/start-server.sh" ]; then
@@ -221,19 +232,6 @@ log "Memory: ${MEMORY}"
 # Change to server directory
 cd "${SERVER_DIR}"
 
-# Graceful shutdown handler
-shutdown() {
-    log "Shutting down server gracefully..."
-    if [ -n "$SERVER_PID" ]; then
-        kill -SIGTERM "$SERVER_PID" 2>/dev/null || true
-        wait "$SERVER_PID" 2>/dev/null || true
-    fi
-    log "Server stopped."
-    exit 0
-}
-
-trap shutdown SIGTERM SIGINT
-
 # Start the server using Box64
 # The server uses start-server.sh which internally calls the Java server
 if [ -f "${SERVER_DIR}/start-server.sh" ]; then
@@ -242,19 +240,17 @@ if [ -f "${SERVER_DIR}/start-server.sh" ]; then
     # Make start-server.sh executable
     chmod +x "${SERVER_DIR}/start-server.sh"
     
-    # Start server with Box64, redirect output to log and stdout
-    box64 bash "${SERVER_DIR}/start-server.sh" \
+    # Project Zomboid's start-server.sh is a bash script
+    # Box64 will automatically intercept any x86_64 binaries via binfmt
+    # Use exec to replace the shell process - this ensures proper signal handling
+    # The start-server.sh script will handle SIGTERM/SIGINT directly
+    # Output goes to both stdout (Docker logs) and log file
+    exec bash "${SERVER_DIR}/start-server.sh" \
         -servername "${SERVER_NAME}" \
         -cachedir=/home/steamcmd/Zomboid \
         -adminusername admin \
         -adminpassword "${ADMIN_PASSWORD}" \
-        -Xmx${MEMORY} -Xms${MEMORY} 2>&1 | tee -a "${LOG_FILE}" &
-    
-    SERVER_PID=$!
-    log "Server started with PID: ${SERVER_PID}"
-    
-    # Wait for server process
-    wait $SERVER_PID
+        -Xmx${MEMORY} -Xms${MEMORY}
 else
     log_error "start-server.sh not found in ${SERVER_DIR}"
     log_error "Server installation may be incomplete."
