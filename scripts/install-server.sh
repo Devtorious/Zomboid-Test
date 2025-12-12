@@ -41,7 +41,7 @@ log "Running SteamCMD to download Project Zomboid server (App ID: 380870)..."
 log "Using 64-bit SteamCMD with Box64 for x86_64 emulation..."
 
 # Run SteamCMD with platform forcing parameters
-./steamcmd.sh \
+box64 ./linux64/steamcmd.sh \
     +@sSteamCmdForcePlatformType linux \
     +force_install_dir "${SERVER_DIR}" \
     +login anonymous \
