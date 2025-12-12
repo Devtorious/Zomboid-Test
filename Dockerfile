@@ -132,7 +132,9 @@ USER steamcmd
 WORKDIR /home/steamcmd
 
 # Download and install SteamCMD
+# Pre-create linux64 directory to encourage 64-bit version for Box64 compatibility
 RUN cd ${STEAMCMD_DIR} && \
+    mkdir -p linux64 && \
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz && \
     tar -xvzf steamcmd_linux.tar.gz && \
     rm steamcmd_linux.tar.gz
