@@ -132,13 +132,12 @@ USER steamcmd
 WORKDIR /home/steamcmd
 
 # Download and install SteamCMD
-# Force it to download the 64-bit version for Box64 compatibility
+# Pre-create linux64 directory to encourage 64-bit version for Box64 compatibility
 RUN cd ${STEAMCMD_DIR} && \
     mkdir -p linux64 && \
     wget https://steamcdn-a.akamaihd.net/client/installer/steamcmd_linux.tar.gz && \
     tar -xvzf steamcmd_linux.tar.gz && \
-    rm steamcmd_linux.tar.gz && \
-    echo "export STEAMCMD_USE_X86_64=1" > ${STEAMCMD_DIR}/env_vars.sh
+    rm steamcmd_linux.tar.gz
 
 # Copy scripts
 COPY --chown=steamcmd:steamcmd scripts/entrypoint.sh /home/steamcmd/entrypoint.sh

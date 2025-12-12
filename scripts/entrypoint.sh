@@ -69,9 +69,9 @@ fi
 
 log "Box64 version: $(box64 -v 2>&1 | head -n 1 || echo 'installed')"
 
-# Verify Box86 is installed (optional, for 32-bit support)
+# Check for Box86 (informational only - not required since we use 64-bit mode)
 if ! command -v box86 &> /dev/null; then
-    log_warn "Box86 not found (32-bit emulation unavailable)"
+    log "Box86 not installed (32-bit x86 support unavailable - not needed for 64-bit mode)"
 else
     log "Box86 version: $(box86 -v 2>&1 | head -n 1 || echo 'installed')"
 fi
@@ -90,9 +90,14 @@ if [ ! -d "${STEAMCMD_DIR}" ]; then
     exit 1
 fi
 
-# List what we have in SteamCMD directory for debugging
-log "SteamCMD directory contents:"
-ls -la "${STEAMCMD_DIR}" || true
+# Debug: Show which SteamCMD binary version is available (helps diagnose 32-bit vs 64-bit issues)
+log "SteamCMD available binaries:"
+if [ -d "${STEAMCMD_DIR}/linux64" ]; then
+    log "  ✓ 64-bit version (linux64/) - will be used with Box64"
+fi
+if [ -d "${STEAMCMD_DIR}/linux32" ]; then
+    log "  ✓ 32-bit version (linux32/) - not used (64-bit forced)"
+fi
 
 # Check if server is installed
 if [ ! -f "${SERVER_DIR}/ProjectZomboid64.json" ] && [ ! -f "${SERVER_DIR}/start-server.sh" ]; then
