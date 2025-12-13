@@ -39,7 +39,7 @@ log "Running SteamCMD to update server..."
 log "Using 64-bit SteamCMD with Box64 for x86_64 emulation..."
 
 # Run SteamCMD with platform forcing parameters
-box64 ./steamcmd.sh \
+bash ./steamcmd.sh \
     +@sSteamCmdForcePlatformType linux \
     +force_install_dir "${SERVER_DIR}" \
     +login anonymous \
