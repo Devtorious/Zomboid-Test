@@ -15,21 +15,21 @@ services:
     
     # Environment variables for server configuration
     environment:
-      - SERVER_NAME=${SERVER_NAME:-My Project Zomboid Server}
-      - SERVER_PASSWORD=${SERVER_PASSWORD:-}
-      - ADMIN_PASSWORD=${ADMIN_PASSWORD:-changeme}
-      - MAX_PLAYERS=${MAX_PLAYERS:-16}
-      - SERVER_PUBLIC=${SERVER_PUBLIC:-false}
-      - PAUSE_EMPTY=${PAUSE_EMPTY:-true}
-      - AUTO_UPDATE=${AUTO_UPDATE:-true}
-      - MEMORY=${MEMORY:-4096m}
-      - SERVER_PORT=${SERVER_PORT:-16261}
-      - MODS=${MODS:-}
-      - WORKSHOP_ITEMS=${WORKSHOP_ITEMS:-}
+      - SERVER_NAME=My Project Zomboid Server
+      - SERVER_PASSWORD=
+      - ADMIN_PASSWORD=changeme
+      - MAX_PLAYERS=16
+      - SERVER_PUBLIC=false
+      - PAUSE_EMPTY=true
+      - AUTO_UPDATE=true
+      - MEMORY=4096m
+      - SERVER_PORT=16261
+      - MODS=
+      - WORKSHOP_ITEMS=
     
     # Port mappings
     ports:
-      - "${SERVER_PORT:-16261}:16261/udp"  # Main game port
+      - "16261:16261/udp"                   # Main game port
       - "16262:16262/tcp"                   # Additional TCP port
       - "8766:8766/udp"                     # Steam query port
       - "8767:8767/udp"                     # Steam port
